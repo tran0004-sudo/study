@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>공부별 · 초등 학습앱</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<meta name="theme-color" content="#5146C8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="공부별" />
 <style>
 html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,sans-serif;background:#F3F0FF;color:#2A2550}#boot{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}#boot b{font-size:20px}#boot p{font-size:13px;color:#6B6591}
 </style>
@@ -12,10 +18,17 @@ html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,sans-seri
 <div id="boot"><div><div style="font-size:44px">📚</div><b>공부별을 불러오는 중이에요</b><p>학년별 어휘 자료를 함께 준비하고 있어요.</p></div></div>
 <script>
 (function(){
-  var stamp='20260904-vocab-mission-advance-v6';
+  var stamp='20260906-pwa-install-v1';
   fetch('app_base.html?v='+stamp,{cache:'no-store'})
     .then(function(r){if(!r.ok)throw new Error('app_base '+r.status);return r.text();})
     .then(function(html){
+      var headExtra=''
+        +'<link rel="manifest" href="manifest.json">'
+        +'<link rel="apple-touch-icon" href="icon-180.png">'
+        +'<meta name="theme-color" content="#5146C8">'
+        +'<meta name="apple-mobile-web-app-capable" content="yes">'
+        +'<meta name="apple-mobile-web-app-status-bar-style" content="default">'
+        +'<meta name="apple-mobile-web-app-title" content="공부별">';
       var extra=''
         +'<script src="vocab_1_2.js?v='+stamp+'"><\/script>'
         +'<script src="vocab_4_1.js?v='+stamp+'"><\/script>'
@@ -23,7 +36,9 @@ html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,sans-seri
         +'<script src="vocab_grade_patch.js?v='+stamp+'"><\/script>'
         +'<script src="vocab_mission_repeat_patch.js?v='+stamp+'"><\/script>'
         +'<script src="vocab_mission_navigation_fix.js?v='+stamp+'"><\/script>'
-        +'<script src="daily_mission_patch.js?v='+stamp+'"><\/script>';
+        +'<script src="daily_mission_patch.js?v='+stamp+'"><\/script>'
+        +'<script src="pwa_install.js?v='+stamp+'"><\/script>';
+      html=html.replace('</head>',headExtra+'</head>');
       html=html.replace('</body>',extra+'</body>');
       document.open();
       document.write(html);
