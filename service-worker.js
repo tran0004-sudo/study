@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gongbubyeol-pwa-v1';
+const CACHE_NAME = 'gongbubyeol-pwa-v2-eng-order';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -7,7 +7,9 @@ const CORE_ASSETS = [
   './icon-180.png',
   './icon-192.png',
   './icon-512.png',
-  './pwa_install.js'
+  './pwa_install.js',
+  './daily_mission_patch.js',
+  './english_lesson7_mission_patch.js'
 ];
 
 self.addEventListener('install', event => {
