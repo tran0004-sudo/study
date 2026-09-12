@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 21 * * *'   # 매일 06:00 (한국시간) = UTC 21:00
   workflow_dispatch:        # 버튼으로 수동 실행도 가능
+  push:
+    branches: [ main ]
+    paths:
+      - 'generate_questions.py'
+      - 'questions_4_2_ebs_patch.json'
 
 permissions:
   contents: write           # questions.json 커밋/푸시 권한
