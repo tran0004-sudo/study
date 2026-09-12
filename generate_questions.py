@@ -2,7 +2,7 @@
 """
 공부별 학습앱 · 매일 문제 자동 생성기 (v4)
 - 기준(BASE): questions_base.json  (앱에 내장된 전체 문제은행)
-- EBS 4-2 추가: questions_4_2_ebs_patch.json
+- EBS 4-2 추가: questions_4_2_ebs_*.json
 - 매일 추가: 학년별 새 연산 문제(무작위 숫자) — 무료, AI 불필요
 - 출력: questions.json  (앱의 '클라우드 자동 업데이트'로 받아감)
 - 중복 방지: (과목, 학년, 문제, 보기, 정답)가 같으면 추가하지 않음
@@ -12,7 +12,7 @@
   같은 폴더에 questions_base.json 을 두고 실행하면 questions.json 이 만들어집니다.
     python generate_questions.py
 """
-import json, os, random, datetime
+import json, os, random, datetime, glob
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TODAY = datetime.date.today().isoformat()
@@ -29,7 +29,9 @@ def load_list(filename):
         return []
 
 BASE = load_list("questions_base.json")
-EBS_4_2 = load_list("questions_4_2_ebs_patch.json")
+EBS_4_2 = []
+for patch_path in sorted(glob.glob(os.path.join(HERE, "questions_4_2_ebs_*.json"))):
+    EBS_4_2.extend(load_list(os.path.basename(patch_path)))
 
 # ---------- 2) 매일 추가되는 연산 문제(무작위) ----------
 def wrong_choices(ans, n=3, spread=6):
