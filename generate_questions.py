@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-공부별 학습앱 · 매일 문제 자동 생성기 (v3)
-- 기준(BASE): questions_base.json  (앱에 내장된 전체 문제은행 = 3·4·5·6학년 학원수준 포함)
+공부별 학습앱 · 매일 문제 자동 생성기 (v4)
+- 기준(BASE): questions_base.json  (앱에 내장된 전체 문제은행)
+- EBS 4-2 추가: questions_4_2_ebs_patch.json
 - 매일 추가: 학년별 새 연산 문제(무작위 숫자) — 무료, AI 불필요
 - 출력: questions.json  (앱의 '클라우드 자동 업데이트'로 받아감)
-- 중복 방지: (과목, 학년, 문제)가 같으면 추가하지 않음
+- 중복 방지: (과목, 학년, 문제, 보기, 정답)가 같으면 추가하지 않음
 정답(a)은 0부터: 0=첫째 보기, 1=둘째 …
 
 사용법:
@@ -18,14 +19,17 @@ TODAY = datetime.date.today().isoformat()
 random.seed(TODAY)
 
 # ---------- 1) 기준 문제 불러오기 ----------
-base_path = os.path.join(HERE, "questions_base.json")
-try:
-    with open(base_path, encoding="utf-8") as f:
-        BASE = json.load(f)
-    if not isinstance(BASE, list):
-        BASE = []
-except Exception:
-    BASE = []
+def load_list(filename):
+    path = os.path.join(HERE, filename)
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+BASE = load_list("questions_base.json")
+EBS_4_2 = load_list("questions_4_2_ebs_patch.json")
 
 # ---------- 2) 매일 추가되는 연산 문제(무작위) ----------
 def wrong_choices(ans, n=3, spread=6):
@@ -72,18 +76,26 @@ def daily_math():
     return out
 
 # ---------- 3) 합치기(중복 제거) ----------
-def key(o): return (o.get("subject"), o.get("g"), o.get("q"), tuple(o.get("c") or []), o.get("a"))
+def key(o):
+    return (o.get("subject"), o.get("g"), o.get("q"),
+            tuple(o.get("c") or []), o.get("a"))
+
 seen = set(); result = []
-for o in BASE + daily_math():
+for o in BASE + EBS_4_2 + daily_math():
     k = key(o)
-    if k in seen: continue
-    seen.add(k); result.append(o)
+    if k in seen:
+        continue
+    seen.add(k)
+    result.append(o)
 
 # ---------- 4) 저장 ----------
 with open(os.path.join(HERE, "questions.json"), "w", encoding="utf-8") as f:
     json.dump(result, f, ensure_ascii=False)
 
 by_grade = {}
-for o in result: by_grade[o.get("g")] = by_grade.get(o.get("g"), 0) + 1
+for o in result:
+    by_grade[o.get("g")] = by_grade.get(o.get("g"), 0) + 1
+
 print(f"[{TODAY}] questions.json 생성 완료 · 총 {len(result)}문제")
+print(f"EBS 4-2 추가 문제: {len(EBS_4_2)}문제")
 print("학년별:", by_grade)
