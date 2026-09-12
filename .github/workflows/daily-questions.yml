@@ -8,7 +8,7 @@ on:
     branches: [ main ]
     paths:
       - 'generate_questions.py'
-      - 'questions_4_2_ebs_patch.json'
+      - 'questions_4_2_ebs_*.json'
 
 permissions:
   contents: write           # questions.json 커밋/푸시 권한
