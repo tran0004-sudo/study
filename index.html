@@ -17,8 +17,25 @@ html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,sans-seri
 <body>
 <div id="boot"><div><div style="font-size:44px">📚</div><b>공부별을 불러오는 중이에요</b><p>학년별 어휘 자료를 함께 준비하고 있어요.</p></div></div>
 <script>
+/* PWA 부트스트랩: 문서가 document.write로 교체되기 전에 먼저 실행한다.
+   서비스워커 등록과 설치 이벤트 수신을 여기서 확정지어야 설치 조건이 안정적으로 충족된다. */
 (function(){
-  var stamp='20260913-grade1-concepts-v2';
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js').catch(function(err){
+      console.warn('service worker 등록 실패:', err);
+    });
+  }
+  window.__pwaDeferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    window.__pwaDeferredPrompt = e;
+    if (typeof window.__pwaOnPrompt === 'function') window.__pwaOnPrompt(e);
+  });
+})();
+</script>
+<script>
+(function(){
+  var stamp='20260916-pwa-install-v3';
   fetch('app_base.html?v='+stamp,{cache:'no-store'})
     .then(function(r){if(!r.ok)throw new Error('app_base '+r.status);return r.text();})
     .then(function(html){

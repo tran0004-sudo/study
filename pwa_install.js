@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  var deferredPrompt = null;
+  var deferredPrompt = window.__pwaDeferredPrompt || null;
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   var ua = navigator.userAgent || '';
   var isIOS = /iphone|ipad|ipod/i.test(ua);
@@ -9,10 +9,8 @@
 
   function registerServiceWorker(){
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function(){
-        navigator.serviceWorker.register('./service-worker.js').catch(function(err){
-          console.warn('Service worker registration failed:', err);
-        });
+      navigator.serviceWorker.register('./service-worker.js').catch(function(err){
+        console.warn('Service worker registration failed:', err);
       });
     }
   }
@@ -104,6 +102,13 @@
     var btn = document.getElementById('pwaInstallBtn');
     if (btn) btn.hidden = true;
   });
+
+  window.__pwaOnPrompt = function(e){
+    deferredPrompt = e;
+    createUI();
+    var btn = document.getElementById('pwaInstallBtn');
+    if (btn) btn.hidden = false;
+  };
 
   registerServiceWorker();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', createUI);

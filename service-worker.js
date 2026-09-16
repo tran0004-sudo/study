@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gongbubyeol-pwa-v2-eng-order';
+const CACHE_NAME = 'gongbubyeol-pwa-v3-install';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -15,8 +15,11 @@ const CORE_ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(CORE_ASSETS))
+      // addAll은 하나라도 실패하면 설치 전체가 취소된다.
+      // 설치가 취소되면 서비스워커가 활성화되지 않아 앱 설치 조건이 무너지므로 개별 처리한다.
+      .then(cache => Promise.allSettled(CORE_ASSETS.map(url => cache.add(url))))
       .then(() => self.skipWaiting())
+      .catch(() => self.skipWaiting())
   );
 });
 
